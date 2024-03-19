@@ -17,69 +17,55 @@ dns:
   use-hosts: true
   nameserver:
     - https://cloudflare-dns.com/dns-query
-proxies:
-  - name: ID
-    server: 
-    port: 443
-    type: vmess
-    uuid: 
-    alterId: 0
-    cipher: auto
-    tls: true
-    skip-cert-verify: true
-    servername: 
-    network: grpc
-    grpc-opts:
-      grpc-service-name: vmess-grpc
-    udp: true
-  - name: ID BACKUP
-    server: 
-    port: 443
-    type: trojan
-    password: 
-    skip-cert-verify: true
-    sni: 
-    network: ws
-    ws-opts:
-      path: /trojanWS
-      headers:
-        Host: 
-    udp: true
-  - name: SG
-    server: 
-    port: 443
-    type: vmess
-    uuid: 
-    alterId: 0
-    cipher: auto
-    tls: true
-    skip-cert-verify: true
-    servername: 
-    network: grpc
-    grpc-opts:
-      grpc-service-name: vmess-grpc
-    udp: true
+proxy-providers:
+  akun_indonesia:
+    type: file
+    path: "./proxy_provider/akun_indonesia.yaml"
+    health-check:
+      enable: true
+      url: http://cp.cloudflare.com/generate_204
+      interval: 300
+  akun_singapura:
+    type: file
+    path: "./proxy_provider/akun_singapura.yaml"
+    health-check:
+      enable: true
+      url: http://cp.cloudflare.com/generate_204
+      interval: 300
 proxy-groups:
+  - name: Akun_ID
+    type: url-test
+    disable-udp: false
+    use:
+    - akun_indonesia
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 150
+  - name: Akun_SG
+    type: url-test
+    disable-udp: false
+    use:
+    - akun_singapura
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 150
   - name: LOAD-BALANCE
     type: load-balance
     strategy: consistent-hashing
     url: http://hi.bonds.id/ping
     interval: 300
-    proxies:
-      - ID
-      - ID BACKUP
+    use:
+    - akun_singapura
   - name: PING
     type: url-test
-    proxies:
-      - ID
-      - ID BACKUP
+    use:
+    - akun_singapura
     url: http://www.gstatic.com/generate_204
     interval: 600
   - name: FALLBACK
     type: fallback
-    proxies:
-      - ID
-      - ID BACKUP
+    use:
+    - akun_singapura
     url: http://www.gstatic.com/generate_204
     interval: 600
   
@@ -87,51 +73,56 @@ proxy-groups:
     type: select
     proxies:
       - REJECT
-      - ID
+      - Akun_ID
+      - PING
+      - FALLBACK
   
   - name: TrafficPorn
     type: select
     proxies:
       - REJECT
-      - ID
-      - SG
+      - Akun_SG
   
   - name: TrafficDirect
     type: select
     proxies:
       - DIRECT
-      - ID
-      - ID BACKUP
+      - Akun_ID
+      - PING
+      - FALLBACK
       - LOAD-BALANCE
 
   - name: TrafficChat
     type: select
     proxies:
       - DIRECT
+      - Akun_ID
+      - PING
       - FALLBACK
-      - ID
-      - ID BACKUP
+      - LOAD-BALANCE
       
   - name: TrafficPortGames
     type: select
     proxies:
       - DIRECT
       - PING
-      - SG
+      - Akun_SG
   
   - name: TrafficGaming
     type: select
     proxies:
       - DIRECT
       - PING
-      - SG
+      - Akun_SG
   
   - name: TrafficUmum
     type: fallback
     lazy: true
     proxies:
-      - ID
-      - ID BACKUP
+      - Akun_ID
+      - PING
+      - FALLBACK
+      - LOAD-BALANCE
     url: http://www.gstatic.com/generate_204
     interval: 30
     
@@ -139,8 +130,10 @@ proxy-groups:
     type: fallback
     lazy: true
     proxies:
-      - ID
-      - ID BACKUP
+      - Akun_ID
+      - PING
+      - FALLBACK
+      - LOAD-BALANCE
     url: http://www.gstatic.com/generate_204
     interval: 30
     
@@ -149,7 +142,7 @@ proxy-groups:
     lazy: true
     proxies:
       - LOAD-BALANCE
-      - SG
+      - Akun_SG
     url: http://www.gstatic.com/generate_204
     interval: 30
     
@@ -158,8 +151,8 @@ proxy-groups:
     lazy: true
     proxies:
       - LOAD-BALANCE
-      - ID
-      - SG
+      - Akun_ID
+      - Akun_SG
     url: http://www.gstatic.com/generate_204
     interval: 30
     
