@@ -1,0 +1,209 @@
+---
+tproxy-port: 7893
+bind-address: "*"
+mode: rule
+allow-lan: true
+log-level: silent
+external-controller: 0.0.0.0:9090
+external-ui: yacd-gh-pages
+unified-delay: true
+ipv6: false
+dns:
+  enable: true
+  ipv6: false
+  listen: 0.0.0.0:1053
+  enhanced-mode: fake-ip
+  fake-ip-range: 28.0.0.0/8
+  use-hosts: true
+  nameserver:
+    - https://cloudflare-dns.com/dns-query
+proxies:
+- name: AKUN 1 - VMESS
+  server: host/bug/server
+  port: port
+  type: vmess
+  uuid: uud/password
+  alterId: 0
+  cipher: auto
+  tls: true
+  skip-cert-verify: true
+  servername: host/bug
+  network: ws
+  ws-opts:
+    path: /path
+    headers:
+      Host: host/bug
+  udp: true
+- name: AKUN 2 - VMESS
+  server: host/bug/server
+  port: port
+  type: vmess
+  uuid: uud/password
+  alterId: 0
+  cipher: auto
+  tls: true
+  skip-cert-verify: true
+  servername: host/bug
+  network: ws
+  ws-opts:
+    path: /path
+    headers:
+      Host: host/bug
+  udp: true
+- name: AKUN 3 - TROJAN
+  server: host/bug/server
+  port: port
+  type: trojan
+  password: password
+  skip-cert-verify: true
+  sni: host/bug
+  network: ws
+  ws-opts:
+    path: /path
+    headers:
+      Host: host/bug
+  udp: true
+- name: AKUN 4 - TROJAN
+  server: host/bug/server
+  port: port
+  type: trojan
+  password: password
+  skip-cert-verify: true
+  sni: host/bug
+  network: ws
+  ws-opts:
+    path: /path
+    headers:
+      Host: host/bug
+  udp: true
+proxy-groups:
+  - name: LOAD-BALANCE
+    type: load-balance
+    strategy: consistent-hashing
+    url: http://hi.bonds.id/ping
+    interval: 300
+    proxies:
+    - AKUN 1 - VMESS
+    - AKUN 2 - TROJAN
+    - AKUN 3 - VMESS
+    - AKUN 4 - TROJAN
+  - name: PING
+    type: url-test
+    proxies:
+    - AKUN 1 - VMESS
+    - AKUN 2 - TROJAN
+    - AKUN 3 - VMESS
+    - AKUN 4 - TROJAN
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+  - name: FALLBACK
+    type: fallback
+    proxies:
+    - AKUN 1 - VMESS
+    - AKUN 2 - TROJAN
+    - AKUN 3 - VMESS
+    - AKUN 4 - TROJAN
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    
+  - name: Direct Multi-WAN
+    type: select
+    disable-udp: false
+    proxies:
+    - Direct WAN - BIRU
+    - Direct WAN - MERAH
+	
+  - name: Direct WAN - BIRU
+    type: select
+    disable-udp: false
+    interface-name: eth1
+    proxies:
+    - DIRECT
+	- PING
+    - FALLBACK
+    - LOAD-BALANCE
+	
+  - name: Direct WAN - MERAH
+    type: select
+    disable-udp: false
+    interface-name: eth2
+    proxies:
+    - DIRECT
+	
+  - name: TrafficBank
+    type: select
+    proxies:
+      - DIRECT
+      - FALLBACK
+      - Direct WAN - BIRU
+      - Direct WAN - MERAH
+
+  - name: TrafficChat
+    type: select
+    proxies:
+      - DIRECT
+      - PING
+      - FALLBACK
+      - LOAD-BALANCE
+      
+  - name: TrafficPortGames
+    type: select
+    proxies:
+      - DIRECT
+      - PING
+      - Direct WAN - BIRU
+      - Direct WAN - MERAH
+  
+  - name: TrafficGaming
+    type: select
+    proxies:
+      - DIRECT
+      - PING
+      - Direct WAN - BIRU
+      - Direct WAN - MERAH
+  
+  - name: TrafficUmum
+    type: select
+    lazy: true
+    proxies:
+      - PING
+      - FALLBACK
+      - LOAD-BALANCE
+
+rules:
+  - RULE-SET,bank,TrafficBank
+  - RULE-SET,chat,TrafficChat
+  - RULE-SET,gaming,TrafficPortGames
+  - RULE-SET,game_dl,TrafficGaming
+  - RULE-SET,rule_umum,TrafficUmum
+rule-providers:
+  rule_umum:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_umum.yaml"
+    url: https://raw.githubusercontent.com/malikshi/open_clash/main/rule_provider/rule_umum.yaml
+    interval: 86400
+  bank:
+    type: http
+    behavior: classical
+    path: "./rule_provider/bank.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/main/bank.yaml
+    interval: 86400
+  chat:
+    type: http
+    behavior: classical
+    path: "./rule_provider/chat.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/main/chat.yaml
+    interval: 86400
+  gaming:
+    type: http
+    behavior: classical
+    path: "./rule_provider/game.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/main/game.yaml
+    interval: 86400
+  game_dl:
+    type: http
+    behavior: domain
+    path: "./rule_provider/game-dl.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/main/game-dl.yaml
+    interval: 86400
