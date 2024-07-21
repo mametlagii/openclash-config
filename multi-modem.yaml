@@ -34,6 +34,7 @@ proxies:
     headers:
       Host: host
   udp: true
+  interface-name: br-lanmac0
 - name: AKUN 3 - VMESS
   server: bug
   port: 443
@@ -50,6 +51,7 @@ proxies:
     headers:
       Host: host
   udp: true
+  interface-name: br-lanmac0
 - name: AKUN 2 - TROJAN
   server: bug
   port: 443
@@ -63,6 +65,7 @@ proxies:
     headers:
       Host: host
   udp: true
+  interface-name: br-lanmac0
 - name: AKUN 4 - TROJAN
   server: bug
   port: 443
@@ -76,6 +79,7 @@ proxies:
     headers:
       Host: host
   udp: true
+  interface-name: br-lanmac0
 proxy-groups:
   - name: LOAD-BALANCE
     type: load-balance
