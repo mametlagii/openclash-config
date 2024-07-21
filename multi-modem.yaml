@@ -259,7 +259,7 @@ rule-providers:
   rule_ads:
     type: http
     behavior: classical
-    path: "./rule_provider/bank.yaml"
+    path: "./rule_provider/rule_ads.yaml"
     url: https://raw.githubusercontent.com/hillz2/openclash_adblock/main/oisd_big.yaml
     interval: 86400
   rule_umum:
