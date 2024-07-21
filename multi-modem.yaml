@@ -178,7 +178,7 @@ proxy-groups:
   - name: TrafficAdult
     type: select
     proxies:
-      - DIRECT
+      - REJECT
       - PING
       - FALLBACK
       - LOAD-BALANCE
