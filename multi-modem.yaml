@@ -242,6 +242,7 @@ rules:
   - RULE-SET,streaming,TrafficStreaming
   - RULE-SET,playstore,TrafficPlaystore
   - RULE-SET,rule_Direct,TrafficDirect
+  - MATCH,GLOBAL
 rule-providers:
   rule_Direct:
     type: http
