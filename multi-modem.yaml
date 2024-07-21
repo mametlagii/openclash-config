@@ -220,21 +220,21 @@ proxy-groups:
       - Direct WAN - BIRU
       - Direct WAN - MERAH
       - Direct Multi-WAN
-  - name: TrafficUmum
-    type: select
-    lazy: true
-    proxies:
-      - PING
-      - FALLBACK
-      - LOAD-BALANCE
-      - Direct Multi-WAN
+#  - name: TrafficUmum
+#    type: select
+#    lazy: true
+#    proxies:
+#      - PING
+#      - FALLBACK
+#      - LOAD-BALANCE
+#      - Direct Multi-WAN
 rules:
   - RULE-SET,18+,TrafficAdult
   - RULE-SET,bank,TrafficBank
   - RULE-SET,chat,TrafficChat
   - RULE-SET,gaming,TrafficPortGames
   - RULE-SET,game_dl,TrafficGaming
-  - RULE-SET,rule_umum,TrafficUmum
+#  - RULE-SET,rule_umum,TrafficUmum
   - RULE-SET,rule_ads,TrafficAds
   - RULE-SET,videoconference,TrafficTeleconference
   - RULE-SET,speedtest,TrafficSpeedtest
