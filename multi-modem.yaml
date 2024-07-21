@@ -126,6 +126,12 @@ proxy-groups:
     interface-name: eth1
     proxies:
       - DIRECT
+  - name: TrafficDirect
+    type: select
+    proxies:
+      - Direct Multi-WAN
+      - Direct WAN - BIRU
+      - Direct WAN - MERAH      
   - name: TrafficBank
     type: select
     proxies:
@@ -133,6 +139,7 @@ proxy-groups:
       - FALLBACK
       - Direct WAN - BIRU
       - Direct WAN - MERAH
+      - Direct Multi-WAN
   - name: TrafficChat
     type: select
     proxies:
@@ -140,6 +147,7 @@ proxy-groups:
       - PING
       - FALLBACK
       - LOAD-BALANCE
+      - Direct Multi-WAN
   - name: TrafficPlaystore
     type: select
     proxies:
@@ -154,6 +162,7 @@ proxy-groups:
       - PING
       - FALLBACK
       - LOAD-BALANCE
+      - Direct Multi-WAN
   - name: TrafficSpeedtest
     type: select
     proxies:
@@ -167,7 +176,8 @@ proxy-groups:
       - DIRECT
       - PING
       - FALLBACK
-      - LOAD-BALANCE     
+      - LOAD-BALANCE
+      - Direct Multi-WAN
   - name: TrafficTeleconference
     type: select
     proxies:
@@ -175,6 +185,7 @@ proxy-groups:
       - PING
       - FALLBACK
       - LOAD-BALANCE
+      - Direct Multi-WAN
   - name: TrafficAdult
     type: select
     proxies:
@@ -196,6 +207,7 @@ proxy-groups:
       - PING
       - Direct WAN - BIRU
       - Direct WAN - MERAH
+      - Direct Multi-WAN
   - name: TrafficGaming
     type: select
     proxies:
@@ -203,6 +215,7 @@ proxy-groups:
       - PING
       - Direct WAN - BIRU
       - Direct WAN - MERAH
+      - Direct Multi-WAN
   - name: TrafficUmum
     type: select
     lazy: true
@@ -210,6 +223,7 @@ proxy-groups:
       - PING
       - FALLBACK
       - LOAD-BALANCE
+      - Direct Multi-WAN
 rules:
   - RULE-SET,18+,TrafficAdult
   - RULE-SET,bank,TrafficBank
@@ -223,7 +237,14 @@ rules:
   - RULE-SET,sosmed,TrafficSosmed
   - RULE-SET,streaming,TrafficStreaming
   - RULE-SET,playstore,TrafficPlaystore
+  - RULE-SET,rule_Direct,TrafficDirect
 rule-providers:
+  rule_Direct:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_direct.yaml"
+    url: https://raw.githubusercontent.com/malikshi/open_clash/main/rule_provider/rule_direct.yaml
+    interval: 86400
   18+:
     type: http
     behavior: domain
