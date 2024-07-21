@@ -19,62 +19,62 @@ dns:
     - https://cloudflare-dns.com/dns-query
 proxies:
 - name: AKUN 1 - VMESS
-  server: host/bug/server
-  port: port
+  server: bug
+  port: 443
   type: vmess
-  uuid: uud/password
+  uuid: uuid
   alterId: 0
   cipher: auto
   tls: true
   skip-cert-verify: true
-  servername: host/bug
+  servername: host
   network: ws
   ws-opts:
     path: /path
     headers:
-      Host: host/bug
+      Host: host
   udp: true
-- name: AKUN 2 - VMESS
-  server: host/bug/server
-  port: port
+- name: AKUN 3 - VMESS
+  server: bug
+  port: 443
   type: vmess
-  uuid: uud/password
+  uuid: uuid
   alterId: 0
   cipher: auto
   tls: true
   skip-cert-verify: true
-  servername: host/bug
+  servername: host
   network: ws
   ws-opts:
     path: /path
     headers:
-      Host: host/bug
+      Host: host
   udp: true
-- name: AKUN 3 - TROJAN
-  server: host/bug/server
-  port: port
+- name: AKUN 2 - TROJAN
+  server: bug
+  port: 443
   type: trojan
   password: password
   skip-cert-verify: true
-  sni: host/bug
+  sni: host
   network: ws
   ws-opts:
     path: /path
     headers:
-      Host: host/bug
+      Host: host
   udp: true
 - name: AKUN 4 - TROJAN
-  server: host/bug/server
-  port: port
+  server: bug
+  port: 443
   type: trojan
   password: password
   skip-cert-verify: true
-  sni: host/bug
+  sni: host
   network: ws
   ws-opts:
     path: /path
     headers:
-      Host: host/bug
+      Host: host
   udp: true
 proxy-groups:
   - name: LOAD-BALANCE
@@ -83,53 +83,49 @@ proxy-groups:
     url: http://hi.bonds.id/ping
     interval: 300
     proxies:
-    - AKUN 1 - VMESS
-    - AKUN 2 - TROJAN
-    - AKUN 3 - VMESS
-    - AKUN 4 - TROJAN
+      - AKUN 1 - VMESS
+      - AKUN 2 - TROJAN
+      - AKUN 3 - VMESS
+      - AKUN 4 - TROJAN
   - name: PING
     type: url-test
     proxies:
-    - AKUN 1 - VMESS
-    - AKUN 2 - TROJAN
-    - AKUN 3 - VMESS
-    - AKUN 4 - TROJAN
+      - AKUN 1 - VMESS
+      - AKUN 2 - TROJAN
+      - AKUN 3 - VMESS
+      - AKUN 4 - TROJAN
     url: http://www.gstatic.com/generate_204
     interval: 300
   - name: FALLBACK
     type: fallback
     proxies:
-    - AKUN 1 - VMESS
-    - AKUN 2 - TROJAN
-    - AKUN 3 - VMESS
-    - AKUN 4 - TROJAN
+      - AKUN 1 - VMESS
+      - AKUN 2 - TROJAN
+      - AKUN 3 - VMESS
+      - AKUN 4 - TROJAN
     url: http://www.gstatic.com/generate_204
     interval: 300
-    
   - name: Direct Multi-WAN
     type: select
     disable-udp: false
     proxies:
-    - Direct WAN - BIRU
-    - Direct WAN - MERAH
-	
+      - Direct WAN - BIRU
+      - Direct WAN - MERAH
   - name: Direct WAN - BIRU
+    type: select
+    disable-udp: false
+    interface-name: br-lanmac0
+    proxies:
+      - DIRECT
+      - PING
+      - FALLBACK
+      - LOAD-BALANCE
+  - name: Direct WAN - MERAH
     type: select
     disable-udp: false
     interface-name: eth1
     proxies:
-    - DIRECT
-	- PING
-    - FALLBACK
-    - LOAD-BALANCE
-	
-  - name: Direct WAN - MERAH
-    type: select
-    disable-udp: false
-    interface-name: eth2
-    proxies:
-    - DIRECT
-	
+      - DIRECT
   - name: TrafficBank
     type: select
     proxies:
@@ -137,7 +133,6 @@ proxy-groups:
       - FALLBACK
       - Direct WAN - BIRU
       - Direct WAN - MERAH
-
   - name: TrafficChat
     type: select
     proxies:
@@ -145,7 +140,55 @@ proxy-groups:
       - PING
       - FALLBACK
       - LOAD-BALANCE
-      
+  - name: TrafficPlaystore
+    type: select
+    proxies:
+      - DIRECT
+      - PING
+      - FALLBACK
+      - LOAD-BALANCE
+  - name: TrafficStreaming
+    type: select
+    proxies:
+      - DIRECT
+      - PING
+      - FALLBACK
+      - LOAD-BALANCE
+  - name: TrafficSpeedtest
+    type: select
+    proxies:
+      - DIRECT
+      - PING
+      - FALLBACK
+      - LOAD-BALANCE
+  - name: TrafficSosmed
+    type: select
+    proxies:
+      - DIRECT
+      - PING
+      - FALLBACK
+      - LOAD-BALANCE     
+  - name: TrafficTeleconference
+    type: select
+    proxies:
+      - DIRECT
+      - PING
+      - FALLBACK
+      - LOAD-BALANCE
+  - name: TrafficAdult
+    type: select
+    proxies:
+      - DIRECT
+      - PING
+      - FALLBACK
+      - LOAD-BALANCE
+  - name: TrafficAds
+    type: select
+    proxies:
+      - REJECT
+      - PING
+      - FALLBACK 
+      - LOAD-BALANCE
   - name: TrafficPortGames
     type: select
     proxies:
@@ -153,7 +196,6 @@ proxy-groups:
       - PING
       - Direct WAN - BIRU
       - Direct WAN - MERAH
-  
   - name: TrafficGaming
     type: select
     proxies:
@@ -161,7 +203,6 @@ proxy-groups:
       - PING
       - Direct WAN - BIRU
       - Direct WAN - MERAH
-  
   - name: TrafficUmum
     type: select
     lazy: true
@@ -169,14 +210,32 @@ proxy-groups:
       - PING
       - FALLBACK
       - LOAD-BALANCE
-
 rules:
+  - RULE-SET,18+,TrafficAdult
   - RULE-SET,bank,TrafficBank
   - RULE-SET,chat,TrafficChat
   - RULE-SET,gaming,TrafficPortGames
   - RULE-SET,game_dl,TrafficGaming
   - RULE-SET,rule_umum,TrafficUmum
+  - RULE-SET,rule_ads,TrafficAds
+  - RULE-SET,videoconference,TrafficTeleconference
+  - RULE-SET,speedtest,TrafficSpeedtest
+  - RULE-SET,sosmed,TrafficSosmed
+  - RULE-SET,streaming,TrafficStreaming
+  - RULE-SET,playstore,TrafficPlaystore
 rule-providers:
+  18+:
+    type: http
+    behavior: domain
+    path: "./rule_provider/18+.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/main/adult.yaml
+    interval: 86400
+  rule_ads:
+    type: http
+    behavior: classical
+    path: "./rule_provider/bank.yaml"
+    url: https://raw.githubusercontent.com/malikshi/open_clash/main/rule_provider/rule_personalads.yaml
+    interval: 86400
   rule_umum:
     type: http
     behavior: classical
@@ -206,4 +265,34 @@ rule-providers:
     behavior: domain
     path: "./rule_provider/game-dl.yaml"
     url: https://raw.githubusercontent.com/mametlagii/rule-provider/main/game-dl.yaml
+    interval: 86400
+  playstore:
+    type: http
+    behavior: domain
+    path: "./rule_provider/playstore.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/main/playstore.yaml
+    interval: 86400
+  sosmed:
+    type: http
+    behavior: classical
+    path: "./rule_provider/sosmed.yaml"
+    url: https://raw.githubusercontent.com/malikshi/open_clash/main/rule_provider/rule_sosmed.yaml
+    interval: 86400
+  streaming:
+    type: http
+    behavior: classical
+    path: "./rule_provider/streaming.yaml"
+    url: https://raw.githubusercontent.com/malikshi/open_clash/main/rule_provider/rule_streaming.yaml
+    interval: 86400
+  speedtest:
+    type: http
+    behavior: classical
+    path: "./rule_provider/speedtest.yaml"
+    url: https://raw.githubusercontent.com/malikshi/open_clash/main/rule_provider/rule_speedtest.yaml
+    interval: 86400
+  videoconference:
+    type: http
+    behavior: classical
+    path: "./rule_provider/videoconference.yaml"
+    url: https://raw.githubusercontent.com/malikshi/open_clash/main/rule_provider/rule_videoconferences.yaml
     interval: 86400
