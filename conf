@@ -1,0 +1,189 @@
+---
+rule-providers:
+  d3ward:
+    type: file
+    behavior: domain
+    path: "./rule_provider/d3ward.yaml"
+  rule_bank:
+    type: http
+    behavior: classical
+    path: "./rule_provider/bank.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/main/bank.yaml
+    interval: 86400
+  rule_gaming:
+    type: http
+    behavior: classical
+    path: "./rule_provider/game.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/main/game.yaml
+    interval: 86400
+proxy-providers:
+  Account:
+    type: file
+    path: "./proxy_provider/account.yaml"
+    health-check:
+      enable: true
+      url: https://cp.cloudflare.com/generate_204
+      interval: 5
+  Account2:
+    type: file
+    path: "./proxy_provider/account2.yaml"
+    health-check:
+      enable: true
+      url: https://cp.cloudflare.com/generate_204
+      interval: 5
+proxy-groups:
+- name: PRIORITAS
+  type: select
+  use:
+  - Account
+  url: https://cp.cloudflare.com/generate_204
+  interval: '150'
+- name: LOAD-BALANCE
+  type: load-balance
+  strategy: consistent-hashing
+  disable-udp: false
+  use:
+  - Account
+  - Account2
+  url: https://cp.cloudflare.com/generate_204
+  interval: '150'
+- name: BANK
+  type: select
+  disable-udp: false
+  use:
+  - Account
+  proxies:
+  - DIRECT
+  - PRIORITAS
+- name: WHATSAPP
+  type: select
+  disable-udp: false
+  use:
+  - Account
+  proxies:
+  - DIRECT
+  - PRIORITAS
+  url: https://cp.cloudflare.com/generate_204
+  interval: '150'
+- name: GAME
+  type: select
+  disable-udp: false
+  proxies:
+  - DIRECT
+  - PRIORITAS
+  url: https://cp.cloudflare.com/generate_204
+  interval: '150'
+- name: GAMING_QOS
+  type: select
+  disable-udp: false
+  proxies:
+  - DIRECT
+  - PRIORITAS
+  url: https://cp.cloudflare.com/generate_204
+  interval: '150'
+- name: PLAYSTORE
+  type: select
+  disable-udp: false
+  use:
+  - Account
+  - Account2
+  proxies:
+  - PRIORITAS
+  - LOAD-BALANCE
+  url: https://cp.cloudflare.com/generate_204
+  interval: '150'
+- name: SOSMED
+  type: select
+  disable-udp: false
+  proxies:
+  - PRIORITAS
+  - LOAD-BALANCE
+  - Direct Multi-WAN
+  url: https://cp.cloudflare.com/generate_204
+  interval: '150'
+- name: STREAMING
+  type: select
+  disable-udp: false
+  proxies:
+  - PRIORITAS
+  - LOAD-BALANCE
+  - Direct Multi-WAN
+  url: https://cp.cloudflare.com/generate_204
+  interval: '150'
+- name: SPEEDTEST
+  type: select
+  disable-udp: false
+  use:
+  - Account
+  - Account2
+  url: https://cp.cloudflare.com/generate_204
+  interval: '150'
+- name: IKLAN
+  type: select
+  disable-udp: false
+  proxies:
+  - REJECT
+  - PRIORITAS
+  - LOAD-BALANCE
+  url: https://cp.cloudflare.com/generate_204
+  interval: '150'
+- name: TRUST+
+  type: select
+  disable-udp: false
+  proxies:
+  - REJECT
+  - LOAD-BALANCE
+  url: https://cp.cloudflare.com/generate_204
+  interval: '150'
+redir-port: 7892
+tproxy-port: 7895
+port: 7890
+socks-port: 7891
+mixed-port: 7893
+mode: rule
+log-level: silent
+allow-lan: true
+external-controller: 0.0.0.0:9090
+secret: fbrn02
+bind-address: "*"
+unified-delay: true
+external-ui: "/usr/share/openclash/ui"
+experimental:
+  ignore-resolve-fail: true
+ipv6: false
+tun:
+  enable: true
+  stack: system
+  device: utun
+  mtu: 65535
+  auto-route: false
+  auto-detect-interface: false
+  dns-hijack:
+  - tcp://any:53
+profile:
+  store-selected: true
+  store-fakeip: true
+  store-fake-ip: false
+rules:
+- DST-PORT,3478,WHATSAPP
+- DST-PORT,9993,LOAD-BALANCE
+- DOMAIN-KEYWORD,pagead2.googlesyndication.com,GLOBAL
+- RULE-SET,d3ward,IKLAN
+- GEOSITE,whatsapp,WHATSAPP
+- GEOSITE,rule-streaming,STREAMING
+- GEOSITE,videoconference,STREAMING
+- GEOSITE,rule-sosmed,SOSMED
+- GEOSITE,oisd-full,IKLAN
+- GEOSITE,rule-ads,IKLAN
+- GEOSITE,rule-gaming,GAME
+- GEOSITE,speedtest,SPEEDTEST
+- GEOIP,facebook,SOSMED
+- GEOIP,twitter,SOSMED
+- GEOIP,telegram,PRIORITAS
+- GEOIP,netflix,STREAMING
+- GEOIP,google,PRIORITAS
+- RULE-SET,rule_bank,BANK
+- RULE-SET,rule_gaming,GAMING_QOS
+- GEOSITE,oisd-nsfw,TRUST+
+- GEOSITE,rule-playstore,PLAYSTORE
+- MATCH,GLOBAL
