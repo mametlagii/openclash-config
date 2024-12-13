@@ -1,0 +1,232 @@
+proxy-providers:
+  ✅PP-ID:
+    type: file
+    path: "./proxy_provider/id.yaml"
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+  ✅PP-SG:
+    type: file
+    path: "./proxy_provider/sg.yaml"
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+  ✅PP-BACKUP:
+    type: file
+    path: "./proxy_provider/backup.yaml"
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+# ================= prime ==================
+rule-providers:
+  🔄18+:
+    type: http
+    behavior: domain
+    path: "./rule_provider/18+.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/refs/heads/main/adult.yaml
+  🔄IKLAN:
+    type: http
+    behavior: classical
+    path: "./rule_provider/ads.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/refs/heads/main/oisd_big.yaml
+  🔄BANK:
+    type: http
+    behavior: classical
+    path: "./rule_provider/bank.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/main/bank.yaml
+  🔄CHAT:
+    type: http
+    behavior: classical
+    path: "./rule_provider/bank.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/main/chat.yaml
+  🔄GAME:
+    type: http
+    behavior: classical
+    path: "./rule_provider/game.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/refs/heads/main/game.yaml
+  🔄GAME_DL:
+    type: http
+    behavior: domain
+    path: "./rule_provider/game_dl.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/refs/heads/main/game-dl.yaml
+  🔄MEDIA:
+    type: http
+    behavior: classical
+    path: "./rule_provider/media.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/main/media.yaml
+  🔄PLAYSTORE:
+    type: http
+    behavior: domain
+    path: "./rule_provider/playstore.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/refs/heads/main/playstore.yaml
+  🔄SPEEDTEST:
+    type: http
+    behavior: classical
+    path: "./rule_provider/speedtest.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/main/speedtest.yaml
+  🔄UMUM:
+    type: http
+    behavior: classical
+    path: "./rule_provider/umum.yaml"
+    url: https://raw.githubusercontent.com/mametlagii/rule-provider/main/umum.yaml
+# ================= prime ==================
+ 
+      
+# ================= prime ==================
+proxy-groups:
+- name: 🔄LOAD-BALANCE
+  type: load-balance
+  strategy: consistent-hashing
+  disable-udp: false
+  proxies:
+  - ✅PG-ID
+  - ✅PG-SG
+  - ✅PG-LOCAL
+  url: http://www.gstatic.com/generate_204
+  interval: '300'
+- name: ✅PG-ID
+  type: load-balance
+  strategy: consistent-hashing
+  disable-udp: false
+  use:
+  - ✅PP-ID
+  url: http://www.gstatic.com/generate_204
+  interval: '300'
+- name: ✅PG-SG
+  type: load-balance
+  strategy: consistent-hashing
+  disable-udp: false
+  use:
+  - ✅PP-SG
+  url: http://www.gstatic.com/generate_204
+  interval: '300'
+- name: ✅PG-LOCAL
+  type: load-balance
+  strategy: consistent-hashing
+  disable-udp: false
+  use:
+  - ✅PP-BACKUP
+  url: http://www.gstatic.com/generate_204
+  interval: '300' 
+- name: 🔄18+
+  type: select
+  proxies:
+  - REJECT
+  - ✅PG-SG
+- name: 🔄IKLAN
+  type: select
+  proxies:
+  - REJECT
+  - ✅PG-ID
+  - ✅PG-SG
+  - ✅PG-LOCAL
+- name: 🔄BANK
+  type: select
+  proxies:
+  - DIRECT
+  - ✅PG-ID
+- name: 🔄CHAT
+  type: select
+  proxies:
+  - DIRECT
+  - ✅PG-ID
+- name: 🔄GAME
+  type: select
+  proxies:
+  - ✅PG-ID
+  - ✅PG-SG
+  - ✅PG-LOCAL
+- name: 🔄MEDIA
+  type: select
+  proxies:
+  - ✅PG-ID
+  - ✅PG-SG
+  - ✅PG-LOCAL
+  - 🔄LOAD-BALANCE
+- name: 🔄PLAYSTORE
+  type: select
+  proxies:
+  - ✅PG-ID
+  - ✅PG-SG
+  - ✅PG-LOCAL
+  - 🔄LOAD-BALANCE
+- name: 🔄SPEEDTEST
+  type: select
+  proxies:
+  - ✅PG-ID
+  - ✅PG-SG
+  - ✅PG-LOCAL
+  - 🔄LOAD-BALANCE
+- name: 🔄UMUM
+  type: select
+  proxies:
+  - ✅PG-ID
+  - ✅PG-SG
+  - ✅PG-LOCAL
+  - 🔄LOAD-BALANCE
+# ================= prime ==================
+dns:
+  enable: true
+  ipv6: false
+  use-host: true
+  enhanced-mode: fake-ip
+  listen: 0.0.0.0:7874
+  nameserver:
+    - 8.8.8.8
+    - https://dns.google/dns-query
+    - 1.1.1.1
+    - https://cloudflare-dns.com/dns-query
+  fallback:
+    - 1.1.1.1
+    - https://cloudflare-dns.com/dns-query
+    - 8.8.8.8
+    - https://dns.google/dns-query
+  default-nameserver:
+    - 1.1.1.1
+  fake-ip-range: 198.18.0.1/16
+  listen: 127.0.0.1:7874
+  fake-ip-filter:
+  - "+.*"
+  default-nameserver:
+  - 1.1.1.1
+  - 8.8.8.8
+redir-port: 7892
+tproxy-port: 7895
+port: 7890
+socks-port: 7891
+mixed-port: 7893
+mode: rule
+log-level: silent
+allow-lan: true
+external-controller: 0.0.0.0:9090
+secret: 2910
+bind-address: "*"
+external-ui: "/usr/share/openclash/ui"
+ipv6: false
+tun:
+  enable: true
+  stack: system
+  auto-route: false
+  auto-detect-interface: false
+  dns-hijack:
+  - tcp://1.1.1.1:53
+profile:
+  store-selected: true
+  store-fake-ip: true
+rules:
+- RULE-SET,🔄18+,🔄18+
+- RULE-SET,🔄IKLAN,🔄IKLAN
+- RULE-SET,🔄BANK,🔄BANK
+- RULE-SET,🔄CHAT,🔄CHAT
+- RULE-SET,🔄GAME,🔄GAME
+- RULE-SET,🔄GAME_DL,🔄GAME
+- RULE-SET,🔄MEDIA,🔄MEDIA
+- RULE-SET,🔄PLAYSTORE,🔄PLAYSTORE
+- RULE-SET,🔄SPEEDTEST,🔄SPEEDTEST
+- RULE-SET,🔄UMUM,🔄UMUM
+- IP-CIDR,198.18.0.1/16,REJECT,no-resolve
+- MATCH,GLOBAL
+tcp-concurrent: true
