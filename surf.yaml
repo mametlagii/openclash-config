@@ -14,8 +14,23 @@ sms = trojan, 104.17.156.243, 443, password=123ce381-d851-44b1-b4bf-0ba37546b365
 SelectGroup = select, sms, ikd
 Local = select, sms
 Backup = select, ikd
+Trust+ = REJECT
 
 [Rule]
+# Bank
+DOMAIN-SUFFIX,mandiri.co.id,Local
+DOMAIN-SUFFIX,jago.com,Local
+DOMAIN-SUFFIX,gobiz.co.id,Local
+DOMAIN-SUFFIX,gojek.com,Local
+DOMAIN-SUFFIX,dana.id,Local
+DOMAIN-SUFFIX,shopeepay.co.id,Local
+DOMAIN-SUFFIX,shopee.co.id,Local
+DOMAIN-SUFFIX,tokopedia.com,Local
+DOMAIN-KEYWORD,byu.id,Local
+DOMAIN-KEYWORD,telkomsel.com,Local
+DOMAIN-KEYWORD,xl.co.id,Local
+DOMAIN-SUFFIX,bri.co.id,Local
+  
 # Apple
 DOMAIN-SUFFIX,appsto.re,SelectGroup
 DOMAIN-SUFFIX,s.mzstatic.com,SelectGroup
@@ -110,16 +125,8 @@ IP-CIDR,100.64.0.0/10,DIRECT
 # Final
 GEOIP,ID,DIRECT
 FINAL,SelectGroup
-GEOSITE,whatsapp,Local
-GEOSITE,rule-streaming,Backup
-GEOSITE,videoconference,Backup
-GEOSITE,rule-sosmed,Backup
-GEOSITE,oisd-full,Backup
-GEOSITE,rule-ads,Backup
-GEOSITE,rule-gaming,Backup
-GEOSITE,speedtest,Backup
-GEOIP,facebook,SelectGroup
-GEOIP,twitter,SelectGroup
-GEOIP,telegram,SelectGroup
-GEOIP,netflix,Backup
 GEOIP,google,Local
+GEOSITE,rule-gaming,Backup
+GEOSITE,oisd-nsfw,trust+
+GEOSITE,rule-ads,trust+
+
