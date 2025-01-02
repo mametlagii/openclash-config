@@ -1,14 +1,15 @@
 [General]
 skip-proxy = 127.0.0.1, 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, 100.64.0.0/10, localhost, *.local
-dns-server = 114.114.114.114, 223.5.5.5, system
+dns-server = 1.1.1.1, 8.8.8.8, system
 always-real-ip = stun.l.google.com
 doh-server = https://doh.pub/dns-query
 
 [Proxy]
-ikdid_7215 = trojan, 104.17.156.243, 443, password=95a9267f-3fac-408a-a381-78c5288fecdf, ws=true, ws-path=/trojan, skip-cert-verify=false, udp-relay=false, ws-headers=Host:id-hz2.webkuy.my.id, sni=id-hz2.webkuy.my.id
+ikd = trojan, 104.17.156.243, 443, password=95a9267f-3fac-408a-a381-78c5288fecdf, ws=true, ws-path=/trojan, skip-cert-verify=false, udp-relay=false, ws-headers=Host:id-hz2.webkuy.my.id, sni=id-hz2.webkuy.my.id
+sms = trojan, 104.17.156.243, 443, password=123ce381-d851-44b1-b4bf-0ba37546b365, ws=true, ws-path=/trojanWS, skip-cert-verify=false, udp-relay=false, ws-headers=Host:apalo.janganbuka.my.id, sni=apalo.janganbuka.my.id
 
 [Proxy Group]
-SelectGroup = select, ikdid_7215
+SelectGroup = select, sms, ikd
 
 [Rule]
 # Apple
