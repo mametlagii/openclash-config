@@ -5,16 +5,13 @@ always-real-ip = stun.l.google.com
 doh-server = https://doh.pub/dns-query
 
 [Proxy]
-DIRECT = direct
-REJECT = reject
 ikd = trojan, 104.17.156.243, 443, password=95a9267f-3fac-408a-a381-78c5288fecdf, ws=true, ws-path=/trojan, skip-cert-verify=false, udp-relay=false, ws-headers=Host:id-hz2.webkuy.my.id, sni=id-hz2.webkuy.my.id
 sms = trojan, 104.17.156.243, 443, password=123ce381-d851-44b1-b4bf-0ba37546b365, ws=true, ws-path=/trojanWS, skip-cert-verify=false, udp-relay=false, ws-headers=Host:apalo.janganbuka.my.id, sni=apalo.janganbuka.my.id
 
 [Proxy Group]
 SelectGroup = select, sms, ikd
-Local = select, sms
+Local = select, sms, DIRECT
 Backup = select, ikd
-Trust+ = REJECT
 
 [Rule]
 # Bank
@@ -30,17 +27,6 @@ DOMAIN-KEYWORD,byu.id,Local
 DOMAIN-KEYWORD,telkomsel.com,Local
 DOMAIN-KEYWORD,xl.co.id,Local
 DOMAIN-SUFFIX,bri.co.id,Local
-  
-# Apple
-DOMAIN-SUFFIX,appsto.re,SelectGroup
-DOMAIN-SUFFIX,s.mzstatic.com,SelectGroup
-DOMAIN,gspe1-ssl.ls.apple.com,SelectGroup
-DOMAIN,news-events.apple.com,SelectGroup
-DOMAIN,news-client.apple.com,SelectGroup
-DOMAIN-SUFFIX,itunes.apple.com,SelectGroup
-DOMAIN-SUFFIX,lookup-api.apple.com,SelectGroup
-DOMAIN-SUFFIX,lcdn-registration.apple.com,DIRECT
-DOMAIN-SUFFIX,mzstatic.com,DIRECT
 
 # Facebook
 DOMAIN-SUFFIX,cdninstagram.com,SelectGroup,force-remote-dns
@@ -52,11 +38,6 @@ DOMAIN-SUFFIX,fbcdn.net,SelectGroup,force-remote-dns
 DOMAIN-SUFFIX,instagram.com,SelectGroup,force-remote-dns
 DOMAIN-SUFFIX,whatsapp.net,SelectGroup,force-remote-dns
 DOMAIN-SUFFIX,whatsapp.com,SelectGroup,force-remote-dns
-
-# Twitter
-DOMAIN-SUFFIX,t.co,SelectGroup,force-remote-dns
-DOMAIN-SUFFIX,twimg.com,SelectGroup,force-remote-dns
-DOMAIN-SUFFIX,twitter.com,SelectGroup,force-remote-dns
 
 # Google
 DOMAIN-SUFFIX,ampproject.com,SelectGroup
@@ -98,14 +79,6 @@ DOMAIN-SUFFIX,nflximg.net,SelectGroup
 DOMAIN-SUFFIX,nflxso.net,SelectGroup
 DOMAIN-SUFFIX,nflxvideo.net,SelectGroup
 
-# Line
-DOMAIN-SUFFIX,scdn.co,SelectGroup,force-remote-dns
-DOMAIN-SUFFIX,line.naver.jp,SelectGroup,force-remote-dns
-DOMAIN-SUFFIX,line.me,SelectGroup
-DOMAIN-SUFFIX,line-apps.com,SelectGroup
-DOMAIN-SUFFIX,line-cdn.net,SelectGroup
-DOMAIN-SUFFIX,line-scdn.net,SelectGroup
-
 # Telegram
 IP-CIDR,91.108.56.0/22,SelectGroup,no-resolve
 IP-CIDR,91.108.4.0/22,SelectGroup,no-resolve
@@ -125,8 +98,3 @@ IP-CIDR,100.64.0.0/10,DIRECT
 # Final
 GEOIP,ID,DIRECT
 FINAL,SelectGroup
-GEOIP,google,Local
-GEOSITE,rule-gaming,Backup
-GEOSITE,oisd-nsfw,trust+
-GEOSITE,rule-ads,trust+
-
