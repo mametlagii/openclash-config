@@ -10,7 +10,7 @@ ikd = trojan, 104.17.156.243, 443, password=95a9267f-3fac-408a-a381-78c5288fecdf
 sms = trojan, 104.17.156.243, 443, password=123ce381-d851-44b1-b4bf-0ba37546b365, ws=true, ws-path=/trojanWS, skip-cert-verify=false, udp-relay=false, ws-headers=Host:apalo.janganbuka.my.id, sni=apalo.janganbuka.my.id
 
 [Proxy Group]
-AutoTestGroup = url-test,sms,ikd, url=http://www.gstatic.com/generate_204, interval=600, tolerance=100, timeout=5
+LoadBalanceGroup = load-balance,sms,ikd, url=http://www.gstatic.com/generate_204, interval=600, tolerance=100, timeout=5
 
 [Rule]
 # Bank
@@ -62,5 +62,9 @@ DOMAIN-KEYWORD,google,sms,force-remote-dns
 DOMAIN-SUFFIX,whatsapp.net,sms,force-remote-dns
 DOMAIN-SUFFIX,whatsapp.com,sms,force-remote-dns
 
-FINAL,AutoTestGroup
+# Instagram
+DOMAIN-SUFFIX,instagram.com,sms,force-remote-dns
+
+FINAL,LoadBalanceGroup
+RULE-SET,https://raw.githubusercontent.com/mametlagii/rule-provider/refs/heads/main/bank.yaml,sms
 
