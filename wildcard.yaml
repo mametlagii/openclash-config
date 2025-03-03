@@ -1,0 +1,50 @@
+wildcard xcl
+
+proxies :
+   - name: XCL TLS ✅
+     server: ava.game.naver.com
+     port: 443
+     type: trojan
+     password: UUID your account
+     skip-cert-verify: true
+     sni: ava.game.naver.com.your-domain-account.net
+     network: ws
+     ws-opts:
+       path: /trojan
+       headers:
+         Host: ava.game.naver.com.your-domain-account.net
+     udp: true
+
+wildcard xcvip
+
+proxies :
+    - name: XCVIP YT TLS ✅
+      server: support.zoom.us
+      port: 443
+      type: trojan
+      password: UUID your account
+      skip-cert-verify: true
+      sni: zoomgov.com.your-domain-account.net
+      network: ws
+      ws-opts:
+        path: /trojan
+        headers:
+          Host: zoomgov.com.your-domain-account.net
+      udp: true
+
+wildcard - viu
+
+proxies :
+    - name: VIU TLS ✅
+      server: zaintest.vuclip.com
+      port: 443
+      type: trojan
+      password: UUID your account
+      skip-cert-verify: true
+      sni: zaintest.vuclip.com.your-domain-account.net
+      network: ws
+      ws-opts:
+        path: /trojan
+        headers:
+          Host: zaintest.vuclip.com.your-domain-account.net
+      udp: true
